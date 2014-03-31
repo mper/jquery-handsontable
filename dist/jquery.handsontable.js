@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  * http://handsontable.com/
  *
- * Date: Mon Mar 31 2014 15:30:56 GMT+0200 (Central European Daylight Time)
+ * Date: Mon Mar 31 2014 16:03:18 GMT+0200 (Central European Daylight Time)
  */
 /*jslint white: true, browser: true, plusplus: true, indent: 4, maxerr: 50 */
 
@@ -4701,6 +4701,7 @@ Handsontable.SelectionPoint.prototype.arr = function (arr) {
   Handosntable.renderers.registerRenderer('select', SelectRenderer);
 
 })(Handsontable);
+
 (function (Handsontable) {
   'use strict';
 
