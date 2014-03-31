@@ -14,41 +14,24 @@
 
 
     var selectOptions = this.cellProperties.selectOptions;
+    var selectKey = this.cellProperties.selectKey;
+    var selectText = this.cellProperties.selectText;
     var options;
 
-    if (typeof selectOptions == 'function'){
-      options =  this.prepareOptions(selectOptions(this.row, this.col, this.prop))
+    if (typeof selectOptions == 'function') {
+        options = selectOptions(this.row, this.col, this.prop);
     } else {
-      options =  this.prepareOptions(selectOptions);
+        options = selectOptions;
     }
 
     Handsontable.Dom.empty(this.select);
 
-    for (var option in options){
-      if (options.hasOwnProperty(option)){
+    for (var i = 0; i < options.length; i++){      
         var optionElement = document.createElement('OPTION');
-        optionElement.value = option;
-        Handsontable.Dom.fastInnerHTML(optionElement, options[option]);
-        this.select.appendChild(optionElement);
-      }
+        optionElement.value = options[i][selectKey];
+        Handsontable.Dom.fastInnerHTML(optionElement, options[i][selectText]);
+        this.select.appendChild(optionElement);      
     }
-  };
-
-  SelectEditor.prototype.prepareOptions = function(optionsToPrepare){
-
-    var preparedOptions = {};
-
-    if (Handsontable.helper.isArray(optionsToPrepare)){
-      for(var i = 0, len = optionsToPrepare.length; i < len; i++){
-        preparedOptions[optionsToPrepare[i]] = optionsToPrepare[i];
-      }
-    }
-    else if (typeof optionsToPrepare == 'object') {
-      preparedOptions = optionsToPrepare;
-    }
-
-    return preparedOptions;
-
   };
 
   SelectEditor.prototype.getValue = function () {

@@ -6,7 +6,7 @@
  * Licensed under the MIT license.
  * http://handsontable.com/
  *
- * Date: Thu Mar 20 2014 13:06:05 GMT+0100 (CET)
+ * Date: Mon Mar 31 2014 15:30:56 GMT+0200 (Central European Daylight Time)
  */
 /*jslint white: true, browser: true, plusplus: true, indent: 4, maxerr: 50 */
 
@@ -4677,6 +4677,30 @@ Handsontable.SelectionPoint.prototype.arr = function (arr) {
 
 })(Handsontable);
 
+(function(Handosntable){
+
+  'use strict';
+
+  var SelectRenderer = function (instance, TD, row, col, prop, value, cellProperties) {
+        if (!(value == null || value == "")){
+            var txtValue = value;
+
+            for (var i = 0; i < cellProperties.selectOptions.length; i++) {
+                if (cellProperties.selectOptions[i][cellProperties.selectKey] == value) {
+                    txtValue = cellProperties.selectOptions[i][cellProperties.selectText];
+                    break;
+                }
+            }
+        }
+        
+        Handsontable.renderers.TextRenderer(instance, TD, row, col, prop, txtValue, cellProperties);
+  };
+
+  Handosntable.SelectRenderer = SelectRenderer;
+  Handosntable.renderers.SelectRenderer = SelectRenderer;
+  Handosntable.renderers.registerRenderer('select', SelectRenderer);
+
+})(Handsontable);
 (function (Handsontable) {
   'use strict';
 
@@ -5662,41 +5686,24 @@ Handsontable.SelectionPoint.prototype.arr = function (arr) {
 
 
     var selectOptions = this.cellProperties.selectOptions;
+    var selectKey = this.cellProperties.selectKey;
+    var selectText = this.cellProperties.selectText;
     var options;
 
-    if (typeof selectOptions == 'function'){
-      options =  this.prepareOptions(selectOptions(this.row, this.col, this.prop))
+    if (typeof selectOptions == 'function') {
+        options = selectOptions(this.row, this.col, this.prop);
     } else {
-      options =  this.prepareOptions(selectOptions);
+        options = selectOptions;
     }
 
     Handsontable.Dom.empty(this.select);
 
-    for (var option in options){
-      if (options.hasOwnProperty(option)){
+    for (var i = 0; i < options.length; i++){      
         var optionElement = document.createElement('OPTION');
-        optionElement.value = option;
-        Handsontable.Dom.fastInnerHTML(optionElement, options[option]);
-        this.select.appendChild(optionElement);
-      }
+        optionElement.value = options[i][selectKey];
+        Handsontable.Dom.fastInnerHTML(optionElement, options[i][selectText]);
+        this.select.appendChild(optionElement);      
     }
-  };
-
-  SelectEditor.prototype.prepareOptions = function(optionsToPrepare){
-
-    var preparedOptions = {};
-
-    if (Handsontable.helper.isArray(optionsToPrepare)){
-      for(var i = 0, len = optionsToPrepare.length; i < len; i++){
-        preparedOptions[optionsToPrepare[i]] = optionsToPrepare[i];
-      }
-    }
-    else if (typeof optionsToPrepare == 'object') {
-      preparedOptions = optionsToPrepare;
-    }
-
-    return preparedOptions;
-
   };
 
   SelectEditor.prototype.getValue = function () {
@@ -5886,6 +5893,12 @@ Handsontable.DropdownCell = {
   validator: Handsontable.AutocompleteValidator
 };
 
+Handsontable.SelectCell = {
+    editor: Handsontable.editors.SelectEditor,
+    renderer: Handsontable.renderers.SelectRenderer, 
+    validator: Handsontable.AutocompleteValidator
+};
+
 //here setup the friendly aliases that are used by cellProperties.type
 Handsontable.cellTypes = {
   text: Handsontable.TextCell,
@@ -5895,7 +5908,8 @@ Handsontable.cellTypes = {
   autocomplete: Handsontable.AutocompleteCell,
   handsontable: Handsontable.HandsontableCell,
   password: Handsontable.PasswordCell,
-  dropdown: Handsontable.DropdownCell
+  dropdown: Handsontable.DropdownCell,
+  select: Handsontable.SelectCell
 };
 
 //here setup the friendly aliases that are used by cellProperties.renderer and cellProperties.editor
